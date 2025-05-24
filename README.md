@@ -1,11 +1,9 @@
 # quiz-application-using-java
 
+//somesh
 
 import java.io.*;
 import java.util.*;
-
-//somesh
-
 class Question {
     private int id;
     private String questionText;
@@ -42,6 +40,9 @@ class Question {
         return id + "|" + questionText + "|" + answer;
     }
 }
+
+// DAO class 
+
 class QuestionDAO {
     private final File file = new File("data/questions.txt");
 
@@ -51,12 +52,17 @@ class QuestionDAO {
             file.getParentFile().mkdirs();
         }
     }
-      public void addQuestion(Question q) throws IOException {
+
+    // Add question 
+    
+    public void addQuestion(Question q) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
             writer.write(q.toString());
             writer.newLine();
         }
     }
+
+    // Get all questions
     
     public List<Question> getAllQuestions() throws IOException {
         List<Question> list = new ArrayList<>();
@@ -239,8 +245,6 @@ public class QuizApp {
             System.out.println("Error running quiz: " + e.getMessage());
         }
     }
-
-    // Input helpers
 
     private static int getIntInput(String prompt) {
         int input;
