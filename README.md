@@ -1,9 +1,6 @@
 # quiz-application-using-java
 import java.io.*;
 import java.util.*;
-
-//somesh
-
 class Question {
     private int id;
     private String questionText;
@@ -40,9 +37,6 @@ class Question {
         return id + "|" + questionText + "|" + answer;
     }
 }
-
-// DAO class 
-
 class QuestionDAO {
     private final File file = new File("data/questions.txt");
 
@@ -52,17 +46,12 @@ class QuestionDAO {
             file.getParentFile().mkdirs();
         }
     }
-
-    // Add question
-    
-    public void addQuestion(Question q) throws IOException {
+      public void addQuestion(Question q) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
             writer.write(q.toString());
             writer.newLine();
         }
     }
-
-    //  all questions
     
     public List<Question> getAllQuestions() throws IOException {
         List<Question> list = new ArrayList<>();
