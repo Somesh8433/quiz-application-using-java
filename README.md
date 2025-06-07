@@ -1,9 +1,11 @@
 # quiz-application-using-java
 
-//somesh
-
 import java.io.*;
 import java.util.*;
+
+/**
+ * Model class representing a quiz question.
+ */
 class Question {
     private int id;
     private String questionText;
@@ -15,25 +17,12 @@ class Question {
         this.answer = answer;
     }
 
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
+    public String getQuestionText() { return questionText; }
+    public String getAnswer() { return answer; }
 
-    public String getQuestionText() {
-        return questionText;
-    }
-
-    public String getAnswer() {
-        return answer;
-    }
-
-    public void setQuestionText(String questionText) {
-        this.questionText = questionText;
-    }
-
-    public void setAnswer(String answer) {
-        this.answer = answer;
-    }
+    public void setQuestionText(String questionText) { this.questionText = questionText; }
+    public void setAnswer(String answer) { this.answer = answer; }
 
     @Override
     public String toString() {
@@ -41,20 +30,18 @@ class Question {
     }
 }
 
-// DAO class 
-
+/**
+ * Data Access Object (DAO) class for managing Question persistence.
+ */
 class QuestionDAO {
     private final File file = new File("data/questions.txt");
 
     public QuestionDAO() {
-        // Ensure data folder exists
         if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
+            file.getParentFile().mkdirs();  // Ensures data directory exists
         }
     }
 
-    // Add question 
-    
     public void addQuestion(Question q) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
             writer.write(q.toString());
@@ -62,8 +49,6 @@ class QuestionDAO {
         }
     }
 
-    // Get all questions
-    
     public List<Question> getAllQuestions() throws IOException {
         List<Question> list = new ArrayList<>();
         if (!file.exists()) return list;
@@ -73,18 +58,18 @@ class QuestionDAO {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split("\\|");
                 if (parts.length == 3) {
-                    int id = Integer.parseInt(parts[0]);
-                    String questionText = parts[1];
-                    String answer = parts[2];
-                    list.add(new Question(id, questionText, answer));
+                    try {
+                        int id = Integer.parseInt(parts[0]);
+                        list.add(new Question(id, parts[1], parts[2]));
+                    } catch (NumberFormatException e) {
+                        System.out.println("Skipping invalid question record.");
+                    }
                 }
             }
         }
         return list;
     }
 
-    // Update a question by id
-    
     public boolean updateQuestion(Question updatedQ) throws IOException {
         List<Question> list = getAllQuestions();
         boolean updated = false;
@@ -103,8 +88,6 @@ class QuestionDAO {
         return updated;
     }
 
-    // Delete a question by id
-    
     public boolean deleteQuestion(int id) throws IOException {
         List<Question> list = getAllQuestions();
         boolean deleted = false;
@@ -113,7 +96,7 @@ class QuestionDAO {
             for (Question q : list) {
                 if (q.getId() == id) {
                     deleted = true;
-                    continue;  // skip writing deleted question
+                    continue;
                 }
                 writer.write(q.toString());
                 writer.newLine();
@@ -123,8 +106,9 @@ class QuestionDAO {
     }
 }
 
-//himani
-
+/**
+ * Main Application Class - Quiz Console Application
+ */
 public class QuizApp {
     private static final Scanner scanner = new Scanner(System.in);
     private static final QuestionDAO dao = new QuestionDAO();
@@ -135,7 +119,7 @@ public class QuizApp {
 
         while (running) {
             printMenu();
-            int choice = getIntInput("Enter your choice: ");
+            int choice = getIntInput("Enter your choice: ", 1, 6);
             switch (choice) {
                 case 1 -> addQuestion();
                 case 2 -> listQuestions();
@@ -163,16 +147,16 @@ public class QuizApp {
 
     private static void addQuestion() {
         System.out.println("\n-- Add New Question --");
-        int id = getIntInput("Enter question ID (integer): ");
-        String questionText = getStringInput("Enter question text: ");
-        String answer = getStringInput("Enter answer: ");
-
+        int id = getIntInput("Enter question ID (integer): ", 1, Integer.MAX_VALUE);
+        String questionText = getValidatedString("Enter question text: ");
+        String answer = getValidatedString("Enter answer: ");
         Question q = new Question(id, questionText, answer);
+
         try {
             dao.addQuestion(q);
-            System.out.println("Question added successfully!");
+            System.out.println("✅ Question added successfully!");
         } catch (IOException e) {
-            System.out.println("Error saving question: " + e.getMessage());
+            System.out.println("❌ Error saving question: " + e.getMessage());
         }
     }
 
@@ -189,35 +173,33 @@ public class QuizApp {
                         q.getId(), q.getQuestionText(), q.getAnswer());
             }
         } catch (IOException e) {
-            System.out.println("Error reading questions: " + e.getMessage());
+            System.out.println("❌ Error reading questions: " + e.getMessage());
         }
     }
 
     private static void updateQuestion() {
         System.out.println("\n-- Update Question --");
-        int id = getIntInput("Enter ID of question to update: ");
-        String questionText = getStringInput("Enter new question text: ");
-        String answer = getStringInput("Enter new answer: ");
-
+        int id = getIntInput("Enter ID of question to update: ", 1, Integer.MAX_VALUE);
+        String questionText = getValidatedString("Enter new question text: ");
+        String answer = getValidatedString("Enter new answer: ");
         Question updated = new Question(id, questionText, answer);
+
         try {
             boolean success = dao.updateQuestion(updated);
-            if (success) System.out.println("Question updated successfully!");
-            else System.out.println("Question with ID " + id + " not found.");
+            System.out.println(success ? "✅ Question updated!" : "❌ Question ID not found.");
         } catch (IOException e) {
-            System.out.println("Error updating question: " + e.getMessage());
+            System.out.println("❌ Error updating question: " + e.getMessage());
         }
     }
 
     private static void deleteQuestion() {
         System.out.println("\n-- Delete Question --");
-        int id = getIntInput("Enter ID of question to delete: ");
+        int id = getIntInput("Enter ID to delete: ", 1, Integer.MAX_VALUE);
         try {
             boolean success = dao.deleteQuestion(id);
-            if (success) System.out.println("Question deleted successfully!");
-            else System.out.println("Question with ID " + id + " not found.");
+            System.out.println(success ? "✅ Question deleted!" : "❌ ID not found.");
         } catch (IOException e) {
-            System.out.println("Error deleting question: " + e.getMessage());
+            System.out.println("❌ Error deleting question: " + e.getMessage());
         }
     }
 
@@ -226,41 +208,55 @@ public class QuizApp {
         try {
             List<Question> questions = dao.getAllQuestions();
             if (questions.isEmpty()) {
-                System.out.println("No questions available to take the quiz.");
+                System.out.println("No questions available.");
                 return;
             }
+
+            Collections.shuffle(questions); // Optional enhancement
             int score = 0;
             for (Question q : questions) {
-                System.out.println("\n" + q.getQuestionText());
-                String userAnswer = getStringInput("Your answer: ");
+                System.out.println("\nQ: " + q.getQuestionText());
+                String userAnswer = getValidatedString("Your answer: ");
                 if (userAnswer.equalsIgnoreCase(q.getAnswer())) {
-                    System.out.println("Correct!");
+                    System.out.println("✅ Correct!");
                     score++;
                 } else {
-                    System.out.println("Incorrect. Correct answer: " + q.getAnswer());
+                    System.out.println("❌ Incorrect. Correct answer: " + q.getAnswer());
                 }
             }
-            System.out.printf("\nQuiz finished! Your score: %d/%d%n", score, questions.size());
+            System.out.printf("\n🎯 Quiz complete! Your score: %d/%d%n", score, questions.size());
         } catch (IOException e) {
-            System.out.println("Error running quiz: " + e.getMessage());
+            System.out.println("❌ Quiz error: " + e.getMessage());
         }
     }
 
-    private static int getIntInput(String prompt) {
-        int input;
+    // --- Input Validation Methods ---
+
+    private static int getIntInput(String prompt, int min, int max) {
         while (true) {
             System.out.print(prompt);
             try {
-                input = Integer.parseInt(scanner.nextLine().trim());
-                return input;
+                int val = Integer.parseInt(scanner.nextLine().trim());
+                if (val < min || val > max) {
+                    System.out.println("Please enter a valid number between " + min + " and " + max + ".");
+                    continue;
+                }
+                return val;
             } catch (NumberFormatException e) {
-                System.out.println("Invalid integer. Please try again.");
+                System.out.println("Invalid input! Enter a valid number.");
             }
         }
     }
 
-    private static String getStringInput(String prompt) {
-        System.out.print(prompt);
-        return scanner.nextLine().trim();
+    private static String getValidatedString(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                System.out.println("Input cannot be empty.");
+            } else {
+                return input;
+            }
+        }
     }
 }
