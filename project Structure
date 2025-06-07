@@ -1,1 +1,105 @@
 
+Quiz App Java Project Documentation
+
+⸻
+
+1. Project Overview
+
+Project Title: Quiz App
+Language: Java
+File Handling: Java IO (BufferedReader, BufferedWriter)
+Architecture: DAO Pattern (Data Access Object)
+Interface: Console-based (Text UI)
+
+This Quiz App allows users to add, update, delete, view, and attempt quiz questions. All data is persistently stored using file handling mechanisms. It follows good programming practices using object-oriented principles and modularity.
+
+⸻
+
+2. Core Features Implemented
+
+Feature	Description
+Add Question	Adds a new question to the text file
+List Questions	Displays all questions with ID, text, and answer
+Update Question	Updates question text and answer based on ID
+Delete Question	Removes a question using its ID
+Take Quiz	Presents all questions and calculates the user’s score
+
+
+⸻
+
+3. Architecture & Components
+
+A. Question Class:
+	•	Encapsulates the id, questionText, and answer.
+	•	Implements getter/setter methods and toString() for file formatting.
+
+B. QuestionDAO Class:
+	•	Handles all file operations: read, write, update, and delete.
+	•	Maintains decoupling between business logic and file system.
+
+C. QuizApp Class:
+	•	Main class with Scanner UI for user interaction.
+	•	Includes menu-driven navigation and input validation.
+
+⸻
+
+4. Event Handling and Processing
+	•	switch-case menu system for handling user choices.
+	•	Input is dynamically processed and fed into logic blocks.
+	•	Events like quiz attempt, deletion, update are triggered based on user input.
+
+⸻
+
+5. Data Validation
+	•	Validates integer ID input with error handling.
+	•	Ensures non-empty string input for questions and answers.
+	•	Validates the existence of a question before update/delete.
+
+⸻
+
+6. Error Handling and Robustness
+	•	All I/O operations wrapped with try-catch blocks.
+	•	Graceful handling of malformed data.
+	•	File creation and directory checks in QuestionDAO constructor.
+
+⸻
+
+7. Innovative Features
+	•	Enhanced user interaction with emojis for feedback (✅❌🎯).
+	•	Quiz logic compares answers case-insensitively.
+	•	Shuffled questions for variety in quiz attempt.
+
+⸻
+
+8. Possible Enhancements (Optional)
+
+Feature	Description
+GUI Interface	Swing/JavaFX-based GUI for better UX
+Categories	Add categories/tags to questions
+Scores Storage	Save quiz scores per user
+Timer	Add timed quizzes
+Unit Tests	Add JUnit tests for DAO methods
+
+
+⸻
+
+9. Conclusion
+
+This Quiz App demonstrates the application of object-oriented programming, robust file handling, user interaction, and good coding standards in Java. It is a fully functional academic-level project ready for evaluation under common criteria such as correctness, code quality, modular design, and user experience.
+
+⸻
+
+10. Screenshots (Optional)
+
+To include in your final submission, take console screenshots of:
+	•	Adding a question
+	•	Listing questions
+	•	Attempting a quiz
+	•	Updating and deleting questions
+
+⸻
+
+Prepared by: [somesh and Himani]
+Institution: Galgotias University
+
+⸻
